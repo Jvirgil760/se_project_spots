@@ -22,3 +22,5 @@ This project is made so all the elements are displayed correctly on popular scre
 This Webpage is deployed to Git-Hub Pages
 
 . [Deployment Link](https://jvirgil760.github.io/se_project_spots/)
+
+The link to my video: https://www.loom.com/share/9eadd1a71820475e93787053621b1a1f?sid=8117b5e1-cbf0-42fd-954e-8f5bb28179c8
