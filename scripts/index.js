@@ -49,12 +49,23 @@ const cardList = document.querySelector(".cards__list");
 
 const modals = document.querySelectorAll(".modal");
 
+function onClosePress(evt) {
+  if (evt.key === "Escape") {
+    const currentModal = document.querySelector(".modal_opened");
+    closeModal(currentModal);
+  }
+}
+
 function openModal(modal) {
   modal.classList.add("modal_opened");
+  document.addEventListener("keydown", onClosePress);
+  //addEscapeListener(modal);
 }
 
 function closeModal(modal) {
   modal.classList.remove("modal_opened");
+  document.removeEventListener("keydown", onClosePress);
+  //removeEscapeListener(modal);
 }
 
 function handleEditFormSubmit(evt) {
@@ -62,7 +73,10 @@ function handleEditFormSubmit(evt) {
   profileName.textContent = editModalNameInput.value;
   profileDescription.textContent = editModalDescriptionInput.value;
   closeModal(editModal);
+  disableButton(evt.submitter, settings);
 }
+
+editFormElement.addEventListener("submit", handleEditFormSubmit);
 
 function handleAddCardSubmit(evt) {
   evt.preventDefault();
@@ -71,7 +85,10 @@ function handleAddCardSubmit(evt) {
   cardList.prepend(cardElement);
   evt.target.reset();
   closeModal(cardModal);
-}
+  disableButton(evt.submitter, settings);
+} 
+
+cardForm.addEventListener('submit', handleAddCardSubmit);
 
 const previewModal = document.querySelector("#preview-modal");
 const previewModalImgEl = previewModal.querySelector(".modal__image");
@@ -113,19 +130,16 @@ function getCardElement(data) {
 profileEditButton.addEventListener("click", () => {
   editModalNameInput.value = profileName.textContent;
   editModalDescriptionInput.value = profileDescription.textContent;
+  resetValidation(
+    editFormElement,
+    [editModalNameInput, editModalDescriptionInput],
+    settings
+  );
   openModal(editModal);
 });
 
 cardModalBtn.addEventListener("click", () => {
   openModal(cardModal);
-});
-
-editFormElement.addEventListener("submit", handleEditFormSubmit);
-cardForm.addEventListener("submit", handleAddCardSubmit);
-
-initialCards.push({
-  name: "Golden Gate bridge",
-  link: " https://practicum-content.s3.us-west-1.amazonaws.com/software-engineer/spots/7-photo-by-griffin-wooldridge-from-pexels.jpg",
 });
 
 initialCards.forEach((item) => {
@@ -134,8 +148,12 @@ initialCards.forEach((item) => {
 });
 
 modals.forEach((modal) => {
-  modal.addEventListener("click", (evt) => {
-    if (evt.target.classList.contains("modal__close-btn")) {
+  modal.addEventListener("mousedown", (evt) => {
+    if (
+      (evt.target.classList.contains("modal") &&
+        !evt.target.closest(".modal__content")) ||
+      evt.target.classList.contains("modal__close-btn")
+    ) {
       closeModal(modal);
     }
   });

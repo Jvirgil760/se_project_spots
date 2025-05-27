@@ -55,28 +55,39 @@
       <footer class="footer page__section">2023 © Spots</footer>
       <div class="modal" id="edit-modal">
         <div class="modal__container">
-          <button type="submit" class="modal__close-btn"></button>
+          <button class="modal__close-btn"></button>
           <h2 class="modal__title">Edit profile</h2>
-          <form name="edit-profile" class="modal__form">
-            <label class="modal__label">
+          <form class="modal__form" id="edit-profile-form" novalidate>
+            <label class="modal__label" for="profile-name-input">
               Name
               <input
                 id="profile-name-input"
-                type="text"
                 class="modal__input"
                 name="name"
                 placeholder="Type your name"
+                type="text"
+                minlength="2"
+                maxlength="40"
+                required
               />
+              <span id="profile-name-input-error" class="modal__error"></span>
             </label>
             <label class="modal__label">
               Description
               <input
                 id="profile-description-input"
-                type="text"
                 class="modal__input"
                 name="description"
                 placeholder="Describe yourself"
+                type="text"
+                minlength="2"
+                maxlength="200"
+                required
               />
+              <span
+                id="profile-description-input-error"
+                class="modal__error"
+              ></span>
             </label>
             <button type="submit" class="modal__submit-btn">Save</button>
           </form>
@@ -88,26 +99,35 @@
       <div class="modal__container">
         <button type="submit" class="modal__close-btn"></button>
         <h2 class="modal__title">New post</h2>
-        <form class="modal__form">
-          <label class="modal__label">
+        <form class="modal__form" id="card-form" novalidate>
+          <label class="modal__label" for="add-card-image-link-input">
             Image link
             <input
               id="add-card-image-link-input"
-              type="text"
               class="modal__input"
               name="image link"
-              placeholder="Place your link"
+              placeholder="Paste a link to the picture"
+              type="url"
+              required
             />
+            <span
+              id="add-card-image-link-input-error"
+              class="modal__error"
+            ></span>
           </label>
           <label class="modal__label">
             Caption
             <input
               id="profile-caption-input"
-              type="text"
               class="modal__input"
               name="description"
-              placeholder="Describe yourself"
+              placeholder="Type your caption"
+              type="text"
+              minlength="2"
+              maxlength="30"
+              required
             />
+            <span id="profile-caption-input-error" class="modal__error"></span>
           </label>
           <button type="submit" class="modal__submit-btn">Save</button>
         </form>
@@ -124,6 +144,7 @@
         <p class="modal__caption"></p>
       </div>
     </div>
+    <script defer src="./scripts/validation.js"></script>
     <script defer src="./scripts/index.js"></script>
   </body>
 </html>
