@@ -213,12 +213,11 @@ function handleDeleteCard(cardElement, cardId) {
 }
 
 function handleLike(evt, id) {
-  evt.target.classList.toggle(".card__like-button_liked");
   // check if the card is currently liked or not
   const cardLikeBtn = evt.target;
   const isLiked = cardLikeBtn.classList.contains("card__like-button_liked");
   api
-    .changeLikeStatus({ id, isLiked })
+    .changeLikeStatus(id, isLiked)
     .then(() => {
       cardLikeBtn.classList.toggle("card__like-button_liked");
     })
@@ -242,7 +241,7 @@ function getCardElement(data) {
   const deleteButton = cardElement.querySelector(".card__delete-icon");
 
   // TODO - if the card is liked, set the active class on the card
-
+  //
   cardTitleEL.textContent = data.name;
   cardImageEl.src = data.link;
   cardImageEl.alt = data.name;
