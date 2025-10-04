@@ -38,6 +38,14 @@
   align-items: center;
   position: relative;
 }
+
+#delete-modal .modal__container {
+  width: 630px;
+  height: 172px;
+  overflow: visible; /* let the X sit outside the box */
+  position: relative; /* anchor for the absolute X */
+}
+
 .modal__container_type_preview {
   position: relative;
   padding: 0;
@@ -66,19 +74,42 @@
 
 .modal__close-btn {
   position: absolute;
-  background-image: url(../images/closeButton.svg);
+  background-image: url("../images/closeButton.svg");
   background-size: 35px 35px;
   top: 32px;
   right: 50px;
   width: 40px;
   height: 40px;
   cursor: pointer;
+  color: rgba(255, 255, 255, 1);
   padding: 0;
   background-position: center;
   background-color: transparent;
   background-repeat: no-repeat;
   border: none;
   margin: 0;
+}
+
+#delete-modal .modal__close-btn {
+  position: absolute;
+  top: 2px; /* match Figma spacing */
+  right: -32px; /* push it outside */
+  width: 40px;
+  height: 40px;
+  background: transparent;
+  background-image: url("../images/Close_Icon.svg"); /* your asset */
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 24px 24px;
+  border: 0;
+  cursor: pointer;
+  z-index: 2; /* ensure it’s clickable above the panel */
+}
+
+@media (max-width: 640px) {
+  #delete-modal .modal__close-btn {
+    right: 16px;
+  }
 }
 
 .input__btn {
@@ -101,7 +132,7 @@
 }
 
 .modal__close-btn_type_preview {
-  background-image: url(../images/Close\ Icon.svg);
+  background-image: url("../images/closeButton.svg");
   top: -5px;
   right: -53px;
   opacity: 1;
@@ -149,10 +180,54 @@
   color: rgba(33, 33, 33, 1);
 }
 
+#delete-modal .modal__title {
+  margin: 0;
+  font-family: Poppins, Arial, Arial, Helvetica, sans-serif;
+  font-weight: 500;
+  font-size: 24px;
+  line-height: 1;
+  color: rgba(33, 33, 33, 1);
+}
+
 .modal__form {
   margin-top: 32px;
   display: flex;
   flex-direction: column;
+}
+
+.modal__form_type_confirm {
+  margin-top: 24px;
+  display: flex;
+  gap: 20px;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  padding: 0 32px;
+}
+
+.modal__form_type_confirm .modal__btn {
+  width: 156px;
+  height: 52px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+  border-radius: 8px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.modal__btn_danger {
+  background: #ff6565;
+  color: #000;
+  border: 1px solid transparent;
+}
+
+.modal__btn_ghost {
+  background: #fff;
+  color: #000;
+  border: 1px solid #000;
 }
 
 .modal__label {
@@ -219,7 +294,7 @@
   cursor: pointer;
 }
 
-@media screen and (max-width: 627px) {
+@media screen and (max-width: 480px) {
   .modal {
     padding: 0 16px;
     display: flex;
@@ -237,7 +312,50 @@
   .modal__container {
     padding: 12px;
     width: 300px;
-    height: 360px;
+    height: 208px;
+  }
+
+  #edit-modal .modal__container {
+    position: relative;
+    overflow: visible;
+    width: 300px;
+    height: auto; /* important: don't clamp to 208px */
+    min-height: 222px; /* matches Figma baseline height */
+    padding: 12px;
+    border-radius: 8px;
+    gap: 12px; /* space between title and form */
+  }
+
+  #avatar-modal .modal__container {
+    position: relative;
+    overflow: visible; /* keeps the shadow clean */
+    width: 300px;
+    height: 222px; /* Figma height */
+    padding: 12px;
+    border-radius: 8px;
+    gap: 12px; /* title ↔ form spacing from Figma */
+  }
+
+  #delete-modal .modal__container {
+    position: relative; /* anchor for the X */
+    overflow: visible; /* let the X sit outside */
+    width: 300px;
+    height: 208px;
+    padding: 12px;
+    left: 10px;
+    border-radius: 8px;
+    gap: 20px;
+  }
+
+  #add-card-modal .modal__container {
+    position: relative;
+    overflow: visible;
+    width: 300px; /* fixed panel width like Figma */
+    height: auto; /* let content define height */
+    min-height: 222px; /* baseline size so it doesn't collapse */
+    padding: 12px;
+    border-radius: 8px;
+    gap: 12px; /* space between title and form */
   }
 
   .modal__container_type_preview {
@@ -253,9 +371,37 @@
   .modal__title {
     font-family: Poppins, Arial, Helvetica, sans-serif;
     font-weight: 500;
-    font-size: 20px;
+    font-size: 25px;
     line-height: 100%;
     margin: 10px 0 34px;
+  }
+
+  #add-card-modal .modal__title {
+    margin: 0;
+    text-align: left;
+    font-size: 24px;
+    line-height: 32px;
+  }
+
+  #edit-modal .modal__title {
+    margin: 0;
+    text-align: left;
+    font-size: 24px;
+    line-height: 32px;
+  }
+
+  #avatar-modal .modal__title {
+    margin: 0;
+    text-align: left; /* set to 'center' if your comp shows centered */
+    font-size: 20px; /* tweak to your type scale; 20–22px looks right */
+    line-height: 28px;
+  }
+
+  #delete-modal .modal__title {
+    margin: 0;
+    text-align: center;
+    font-size: 24px; /* tweak if your type scale differs */
+    line-height: 32px;
   }
 
   .modal__label {
@@ -263,6 +409,70 @@
     font-size: 16px;
     font-weight: 500;
     line-height: 110%;
+  }
+
+  #add-card-modal .modal__label {
+    font-size: 14px;
+    line-height: 20px;
+    margin: 0;
+  }
+
+  #edit-modal .modal__label {
+    font-size: 14px;
+    line-height: 20px;
+    margin: 0; /* tight like Figma */
+  }
+
+  #avatar-modal .modal__label {
+    display: block;
+    font-size: 14px;
+    line-height: 20px;
+    margin-bottom: 4px; /* label above input */
+  }
+
+  #avatar-modal .modal__btn_primary {
+    width: 100%;
+    height: 52px;
+    border-radius: 8px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    line-height: 1;
+    background: #000;
+    color: #fff;
+    border: 1px solid #000;
+  }
+
+  #add-card-modal .modal__btn_primary {
+    width: 100%;
+    height: 52px;
+    border-radius: 8px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    line-height: 1;
+    background: #000;
+    color: #fff;
+    border: 1px solid #000;
+  }
+
+  #edit-modal .modal__btn_primary {
+    width: 100%;
+    height: 52px;
+    border-radius: 8px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    line-height: 1;
+    background: #000;
+    color: #fff;
+    border: 1px solid #000;
   }
 
   .modal__submit-btn {
@@ -280,9 +490,198 @@
     line-height: 100%;
   }
 
+  #avatar-modal .modal__input {
+    width: 100%;
+    height: 52px; /* matches other controls */
+    box-sizing: border-box;
+    border-radius: 8px;
+    padding: 0 16px;
+    font-size: 14px;
+  }
+
+  #add-card-modal .modal__input {
+    width: 100%;
+    height: 52px; /* Figma control height */
+    box-sizing: border-box;
+    border-radius: 8px;
+    padding: 0 16px;
+    font-size: 14px;
+  }
+
+  #add-card-modal textarea.modal__input {
+    height: 108px;
+    padding: 12px 16px;
+    line-height: 20px;
+    resize: vertical; /* or 'none' to lock it */
+  }
+
+  #edit-modal .modal__input {
+    width: 100%;
+    box-sizing: border-box;
+    border-radius: 8px;
+    padding: 0 16px;
+    font-size: 14px;
+    height: 52px; /* single-line */
+  }
+
+  #edit-modal textarea.modal__input {
+    height: 108px; /* adjust to match your comp */
+    padding: 12px 16px;
+    line-height: 20px;
+    resize: vertical; /* or 'none' if you must match exactly */
+  }
+
   .modal__close-btn {
     top: 12px;
     right: 12px;
+  }
+
+  #edit-modal .modal__close-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 24px;
+    height: 24px;
+    background: transparent;
+    background-image: url("../images/closeButton.svg");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 24px 24px;
+    border: 0;
+    cursor: pointer;
+    z-index: 2;
+  }
+
+  #add-card-modal .modal__close-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 24px;
+    height: 24px;
+    background: transparent;
+    background-image: url("../images/closeButton.svg");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 24px 24px;
+    border: 0;
+    cursor: pointer;
+    z-index: 2;
+  }
+
+  #avatar-modal .modal__close-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 24px;
+    height: 24px;
+    background: transparent;
+    background-image: url("../images/closeButton.svg"); /* white/black x asset */
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 24px 24px;
+    border: 0;
+    cursor: pointer;
+    z-index: 2;
+  }
+
+  #delete-modal .modal__close-btn {
+    position: absolute;
+    top: -50px; /* above panel */
+    right: -2px;
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    background-image: url("../images/Close_Icon.svg"); /* white X */
+    background-position: center;
+    background-size: 35px 35px;
+  }
+
+  #avatar-modal .modal__form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 0;
+  }
+
+  #add-card-modal .modal__form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 0;
+  }
+
+  #edit-modal .modal__form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 0;
+  }
+
+  .modal__form_type_confirm {
+    display: flex;
+    flex-direction: column; /* stack */
+    gap: 16px; /* spacing between Delete and Cancel */
+    align-items: stretch; /* full width inside form */
+    margin-top: 24px;
+  }
+
+  #delete-modal .modal__form_type_confirm {
+    display: flex;
+    flex-direction: column; /* stack */
+    align-items: center;
+    gap: 10px;
+    margin-top: 0; /* title already uses the space */
+  }
+
+  /* Make each button full width & tall */
+  .modal__form_type_confirm .modal__btn {
+    width: 100%;
+    max-width: 156px; /* tweak to match your container width */
+    height: 52px;
+    padding: 0;
+    margin: 0 auto; /* center inside column */
+    border-radius: 8px;
+    font-weight: 600;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #delete-modal .modal__form_type_confirm .modal__btn {
+    width: 156px;
+    height: 52px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border-radius: 8px;
+    font-weight: 600;
+    line-height: 1;
+  }
+
+  .modal__btn_danger {
+    background: #ff6565;
+    color: #000;
+    border: 1px solid transparent;
+  }
+
+  #delete-modal .modal__btn_danger {
+    background: #ff6565;
+    color: #000;
+    border: 1px solid transparent;
+  }
+
+  .modal__btn_ghost {
+    background: #fff;
+    color: #000;
+    border: 1px solid #000;
+  }
+
+  #delete-modal .modal__btn_ghost {
+    background: #fff;
+    color: #000;
+    border: 1px solid #000;
   }
 
   .modal__close-btn_type_preview {
