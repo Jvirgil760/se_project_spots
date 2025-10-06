@@ -253,7 +253,7 @@
 }
 
 .modal__submit-btn_disabled {
-  background-color: grey;
+  background-color: rgba(33, 33, 33, 0.5);
   cursor: not-allowed;
   pointer-events: none;
 }

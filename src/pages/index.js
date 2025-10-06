@@ -138,26 +138,26 @@ function closeModal(modal) {
 
 function handleEditFormSubmit(evt) {
   evt.preventDefault();
+  const btn = evt.submitter;
 
-  const submitBtn = evt.submitter;
-  // submitBtn.textContent = "Saving...";
-  setButtonText(submitBtn, true, "Save", "Saving...");
+  setButtonText(btn, true, "Save", "Saving…");
 
   api
     .editUserInfo({
       name: editModalNameInput.value,
       about: editModalDescriptionInput.value,
     })
-    .then((data) => {
-      // TODO - Use data argument instead of the input values
-      profileName.textContent = editModalNameInput.value;
-      profileDescription.textContent = editModalDescriptionInput.value;
+    .then((user) => {
+      profileName.textContent = user.name; // <-- use server data
+      profileDescription.textContent = user.about; // <-- use server data
       closeModal(editModal);
-      disableButton(evt.submitter, validationConfig);
+
+      // disable only after success, so the form starts disabled next time
+      disableButton(btn, validationConfig);
     })
     .catch(console.error)
     .finally(() => {
-      setButtonText(submitBtn, false, "Save");
+      setButtonText(btn, false, "Save");
     });
 }
 
@@ -168,46 +168,55 @@ editFormElement.addEventListener("submit", handleEditFormSubmit);
 function handleAddCardSubmit(evt) {
   evt.preventDefault();
   const btn = evt.submitter;
-  disableButton(btn, validationConfig);
 
-  const payload = { name: cardNameInput.value, link: cardLinkInput.value };
+  setButtonText(btn, true, "Save", "Saving…");
 
   api
-    .addCard(payload)
+    .addCard({ name: cardNameInput.value, link: cardLinkInput.value })
     .then((serverCard) => {
-      cardList.prepend(getCardElement(serverCard)); // has _id & likes
+      cardList.prepend(getCardElement(serverCard));
       cardForm.reset();
       closeModal(cardModal);
+
+      // disable only after success
+      disableButton(btn, validationConfig);
     })
     .catch(console.error)
     .finally(() => {
-      btn.disabled = false;
-      btn.classList.remove(validationConfig.inactiveButtonClass);
+      setButtonText(btn, false, "Save");
     });
 }
+cardForm.addEventListener("submit", handleAddCardSubmit);
 
 // TODO -  Finish avatar submission handler
 function handleAvatarSubmit(evt) {
   evt.preventDefault();
+  const btn = evt.submitter;
+
+  setButtonText(btn, true, "Save", "Saving…");
+
   api
-    .editAvatarInfo({ avatar: avatarInput.value })
-    .then((data) => {
-      // Use data for updating the avatar
-      const profileAvatar = document.querySelector(".profile__avatar");
-      profileAvatar.alt = "User avatar";
-      profileAvatar.src = data.avatar;
+    .editAvatar({ avatar: avatarInput.value })
+    .then((user) => {
+      avatarImg.src = user.avatar;
+      avatarForm.reset();
       closeModal(avatarModal);
+
+      // disable after success
+      disableButton(btn, validationConfig);
     })
-    .catch(console.error);
+    .catch(console.error)
+    .finally(() => {
+      setButtonText(btn, false, "Save");
+    });
 }
+avatarForm.addEventListener("submit", handleAvatarSubmit);
 
 function handleDeleteCard(cardElement, cardId) {
   selectedCard = cardElement;
   selectedCardId = cardId;
   openModal(deleteModal);
 }
-
-deleteForm.addEventListener("submit", handleDeleteSubmit);
 
 function handleDeleteSubmit(evt) {
   evt.preventDefault();
@@ -220,28 +229,33 @@ function handleDeleteSubmit(evt) {
       selectedCard.remove();
       deleteForm.reset();
       closeModal(deleteModal);
+
+      // disable after success
+      disableButton(deleteButton, validationConfig);
     })
     .catch(console.error)
     .finally(() => {
-      setButtonText(deleteButton, false, "Delete", "Deleting...");
+      setButtonText(deleteButton, false, "Delete");
     });
 }
+
+deleteForm.addEventListener("submit", handleDeleteSubmit);
 
 function handleLike(evt, id) {
   // check if the card is currently liked or not
   const cardLikeBtn = evt.target;
-  const isLiked = cardLikeBtn.classList.contains("card__like-button_liked");
+  const isCurrentlyLiked = cardLikeBtn.classList.contains(
+    "card__like-button_liked"
+  );
   api
-    .changeLikeStatus(id, isLiked)
-    .then((updateCard) => {
-      const isNowLiked = updateCard.likes?.some(
-        (user) => user._id === currentUserId
+    .changeLikeStatus(id, isCurrentlyLiked)
+    .then((updatedCard) => {
+      // Server tells us the truth — use it.
+      cardLikeBtn.classList.toggle(
+        "card__like-button_liked",
+        !!updatedCard.isLiked
       );
-      if (isNowLiked) {
-        cardLikeBtn.classList.add("card__like-button_liked");
-      } else {
-        cardLikeBtn.classList.remove("card__like-button_liked");
-      }
+      // If you show a like counter, update it here from updatedCard.likesCount (or similar)
     })
     .catch(console.error);
 }
@@ -272,7 +286,7 @@ function getCardElement(data) {
   const likedByMe =
     Array.isArray(data.likes) &&
     data.likes.some((u) => u._id === currentUserId);
-  cardLikeBtn.classList.toggle("card__like-button_liked", likedByMe);
+  cardLikeBtn.classList.toggle("card__like-button_liked", !!data.isLiked);
 
   cardLikeBtn.addEventListener("click", (evt) => handleLike(evt, data._id));
   deleteButton.addEventListener("click", () =>
@@ -283,28 +297,6 @@ function getCardElement(data) {
 
   return cardElement;
 }
-
-editFormElement.addEventListener("submit", (evt) => {
-  evt.preventDefault();
-  const btn = evt.submitter;
-  disableButton(btn, validationConfig);
-
-  api
-    .editProfileInfo({
-      name: editModalNameInput.value,
-      about: editModalDescriptionInput.value,
-    })
-    .then((user) => {
-      profileName.textContent = user.name;
-      profileDescription.textContent = user.about;
-      closeModal(editModal);
-    })
-    .catch(console.error)
-    .finally(() => {
-      btn.disabled = false;
-      btn.classList.remove(validationConfig.inactiveButtonClass);
-    });
-});
 
 profileEditButton.addEventListener("click", () => {
   editModalNameInput.value = profileName.textContent;

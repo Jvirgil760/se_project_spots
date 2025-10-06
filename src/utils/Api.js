@@ -73,13 +73,11 @@ class Api {
     );
   }
 
-  deleteCard(id) {
-    return fetch(`${this._baseUrl}/cards/${id}`, {
+  deleteCard(cardId) {
+    return fetch(`${this._baseUrl}/cards/${cardId}`, {
       method: "DELETE",
       headers: this._headers,
-    }).then((res) =>
-      res.ok ? Promise.resolve() : Promise.reject(`Error: ${res.status}`)
-    );
+    }).then(this._handle);
   }
 
   changeLikeStatus(id, isLiked) {
