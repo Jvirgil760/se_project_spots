@@ -37,12 +37,7 @@ class Api {
         name,
         about,
       }),
-    }).then((res) => {
-      if (res.ok) {
-        return res.json();
-      }
-      Promise.reject(`Error: ${res.status}`);
-    });
+    }).then(this._handle);
   }
 
   // TODO - implement POST /cards
@@ -68,9 +63,7 @@ class Api {
       method: "POST",
       headers: this._headers,
       body: JSON.stringify({ name, link }),
-    }).then((res) =>
-      res.ok ? res.json() : Promise.reject(`Error: ${res.status}`)
-    );
+    }).then(this._handle);
   }
 
   deleteCard(cardId) {

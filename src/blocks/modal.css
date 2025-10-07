@@ -252,12 +252,6 @@
   color: #212121;
 }
 
-.modal__submit-btn_disabled {
-  background-color: rgba(33, 33, 33, 0.5);
-  cursor: not-allowed;
-  pointer-events: none;
-}
-
 .modal__input::placeholder {
   color: #212121;
   opacity: 30%;
@@ -287,6 +281,12 @@
   border: none;
   border-radius: 8px;
   opacity: 1;
+}
+
+.modal__submit-btn_disabled {
+  background-color: rgba(33, 33, 33, 0.5);
+  cursor: not-allowed;
+  pointer-events: none;
 }
 
 .modal__submit-btn:hover {

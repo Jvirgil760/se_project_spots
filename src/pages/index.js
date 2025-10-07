@@ -5,7 +5,7 @@ import {
   resetValidation,
   disableButton,
 } from "../scripts/validate.js";
-import { setButtonText } from "../utils/helpers";
+import { setButtonText } from "../utils/helpers.js";
 import Api from "../utils/Api.js";
 import logoUrl from "../images/Logo.svg";
 import bessieAvatarUrl from "../images/2-photo-by-ceiline-from-pexels.jpg";
@@ -63,7 +63,10 @@ api
     if (avatarImg) avatarImg.src = user.avatar;
 
     // newest first (optional)
-    cards.reverse().forEach((data) => cardList.prepend(getCardElement(data)));
+    cards.reverse().forEach((data) => {
+      console.log(data);
+      cardList.prepend(getCardElement(data));
+    });
   })
   .catch(console.error);
 
@@ -136,6 +139,33 @@ function closeModal(modal) {
   //removeEscapeListener(modal);
 }
 
+// define a function for changing the button text. It accepts 4 params (the 2 last are optional with default texts)
+function handleAddCardSubmit(evt) {
+  evt.preventDefault();
+  const btn = evt.submitter;
+
+  setButtonText(btn, true, "Save", "Saving…");
+
+  api
+    .addCard({ name: cardNameInput.value, link: cardLinkInput.value })
+    .then((serverCard) => {
+      cardList.prepend(getCardElement(serverCard));
+      cardForm.reset();
+      closeModal(cardModal);
+
+      // disable only after success
+      disableButton(btn, validationConfig);
+    })
+    .catch(console.error)
+    .finally(() => {
+      setButtonText(btn, false, "Save");
+    });
+}
+
+cardForm.addEventListener("submit", handleAddCardSubmit);
+
+// TODO - implement loading text for all other form submissions
+
 function handleEditFormSubmit(evt) {
   evt.preventDefault();
   const btn = evt.submitter;
@@ -161,11 +191,9 @@ function handleEditFormSubmit(evt) {
     });
 }
 
-// TODO - implement loading text for all other form submissions
+editFormElement.addEventListener("submit", handleAddingCardSubmit);
 
-editFormElement.addEventListener("submit", handleEditFormSubmit);
-
-function handleAddCardSubmit(evt) {
+function handleAddingCardSubmit(evt) {
   evt.preventDefault();
   const btn = evt.submitter;
 
@@ -174,43 +202,20 @@ function handleAddCardSubmit(evt) {
   api
     .addCard({ name: cardNameInput.value, link: cardLinkInput.value })
     .then((serverCard) => {
+      // IMPORTANT: use the server response so getCardElement sees serverCard.isLiked
       cardList.prepend(getCardElement(serverCard));
+
       cardForm.reset();
       closeModal(cardModal);
-
-      // disable only after success
-      disableButton(btn, validationConfig);
+      disableButton(btn, validationConfig); // disable only after success
     })
     .catch(console.error)
     .finally(() => {
       setButtonText(btn, false, "Save");
     });
 }
+
 cardForm.addEventListener("submit", handleAddCardSubmit);
-
-// TODO -  Finish avatar submission handler
-function handleAvatarSubmit(evt) {
-  evt.preventDefault();
-  const btn = evt.submitter;
-
-  setButtonText(btn, true, "Save", "Saving…");
-
-  api
-    .editAvatar({ avatar: avatarInput.value })
-    .then((user) => {
-      avatarImg.src = user.avatar;
-      avatarForm.reset();
-      closeModal(avatarModal);
-
-      // disable after success
-      disableButton(btn, validationConfig);
-    })
-    .catch(console.error)
-    .finally(() => {
-      setButtonText(btn, false, "Save");
-    });
-}
-avatarForm.addEventListener("submit", handleAvatarSubmit);
 
 function handleDeleteCard(cardElement, cardId) {
   selectedCard = cardElement;
@@ -242,20 +247,16 @@ function handleDeleteSubmit(evt) {
 deleteForm.addEventListener("submit", handleDeleteSubmit);
 
 function handleLike(evt, id) {
-  // check if the card is currently liked or not
-  const cardLikeBtn = evt.target;
-  const isCurrentlyLiked = cardLikeBtn.classList.contains(
-    "card__like-button_liked"
-  );
+  const btn = evt.target;
+  const wasLiked = btn.classList.contains("card__like-button_liked");
+
   api
-    .changeLikeStatus(id, isCurrentlyLiked)
+    .changeLikeStatus(id, wasLiked)
     .then((updatedCard) => {
-      // Server tells us the truth — use it.
-      cardLikeBtn.classList.toggle(
-        "card__like-button_liked",
-        !!updatedCard.isLiked
-      );
-      // If you show a like counter, update it here from updatedCard.likesCount (or similar)
+      // server is the source of truth
+      btn.classList.toggle("card__like-button_liked", !!updatedCard.isLiked);
+      // If you show a counter, update it here from updatedCard
+      // likeCounter.textContent = updatedCard.likesCount ?? '';
     })
     .catch(console.error);
 }
@@ -283,9 +284,6 @@ function getCardElement(data) {
   cardImageEl.alt = data.name;
 
   // set initial like state from server data
-  const likedByMe =
-    Array.isArray(data.likes) &&
-    data.likes.some((u) => u._id === currentUserId);
   cardLikeBtn.classList.toggle("card__like-button_liked", !!data.isLiked);
 
   cardLikeBtn.addEventListener("click", (evt) => handleLike(evt, data._id));
