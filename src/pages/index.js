@@ -204,7 +204,6 @@ function handleAddingCardSubmit(evt) {
     .then((serverCard) => {
       // IMPORTANT: use the server response so getCardElement sees serverCard.isLiked
       cardList.prepend(getCardElement(serverCard));
-
       cardForm.reset();
       closeModal(cardModal);
       disableButton(btn, validationConfig); // disable only after success
@@ -247,16 +246,19 @@ function handleDeleteSubmit(evt) {
 deleteForm.addEventListener("submit", handleDeleteSubmit);
 
 function handleLike(evt, id) {
-  const btn = evt.target;
-  const wasLiked = btn.classList.contains("card__like-button_liked");
+  const cardLikeBtn = evt.target;
+  const isCurrentlyLiked = cardLikeBtn.classList.contains(
+    "card__like-button_liked"
+  );
 
   api
-    .changeLikeStatus(id, wasLiked)
+    .changeLikeStatus(id, isCurrentlyLiked)
     .then((updatedCard) => {
-      // server is the source of truth
-      btn.classList.toggle("card__like-button_liked", !!updatedCard.isLiked);
-      // If you show a counter, update it here from updatedCard
-      // likeCounter.textContent = updatedCard.likesCount ?? '';
+      // Server tells us the truth — use it.
+      cardLikeBtn.classList.toggle(
+        "card__like-button_liked",
+        !!updatedCard.isLiked
+      );
     })
     .catch(console.error);
 }
@@ -284,6 +286,9 @@ function getCardElement(data) {
   cardImageEl.alt = data.name;
 
   // set initial like state from server data
+  const likedByMe =
+    Array.isArray(data.likes) &&
+    data.likes.some((u) => u._id === currentUserId);
   cardLikeBtn.classList.toggle("card__like-button_liked", !!data.isLiked);
 
   cardLikeBtn.addEventListener("click", (evt) => handleLike(evt, data._id));
