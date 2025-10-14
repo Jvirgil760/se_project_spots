@@ -191,28 +191,7 @@ function handleEditFormSubmit(evt) {
     });
 }
 
-editFormElement.addEventListener("submit", handleAddingCardSubmit);
-
-function handleAddingCardSubmit(evt) {
-  evt.preventDefault();
-  const btn = evt.submitter;
-
-  setButtonText(btn, true, "Save", "Saving…");
-
-  api
-    .addCard({ name: cardNameInput.value, link: cardLinkInput.value })
-    .then((serverCard) => {
-      // IMPORTANT: use the server response so getCardElement sees serverCard.isLiked
-      cardList.prepend(getCardElement(serverCard));
-      cardForm.reset();
-      closeModal(cardModal);
-      disableButton(btn, validationConfig); // disable only after success
-    })
-    .catch(console.error)
-    .finally(() => {
-      setButtonText(btn, false, "Save");
-    });
-}
+editFormElement.addEventListener("submit", handleEditFormSubmit);
 
 cardForm.addEventListener("submit", handleAddCardSubmit);
 
